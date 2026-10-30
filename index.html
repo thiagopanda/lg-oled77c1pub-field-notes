@@ -328,68 +328,75 @@
         return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
       }
 
-      float glyphRow(float g, float y) {
-        float row = 0.0;
-        if (g < 0.5) {
-          if (y < 0.5) row = 14.0;
-          else if (y < 1.5) row = 17.0;
-          else if (y < 2.5) row = 17.0;
-          else if (y < 3.5) row = 17.0;
-          else if (y < 4.5) row = 17.0;
-          else if (y < 5.5) row = 17.0;
-          else row = 14.0;
-        } else if (g < 1.5) {
-          if (y < 0.5) row = 4.0;
-          else if (y < 1.5) row = 12.0;
-          else if (y < 5.5) row = 4.0;
-          else row = 14.0;
-        } else if (g < 2.5) {
-          if (y < 0.5) row = 14.0;
-          else if (y < 1.5) row = 17.0;
-          else if (y < 2.5) row = 17.0;
-          else if (y < 3.5) row = 31.0;
-          else row = 17.0;
-        } else if (g < 3.5) {
-          if (y < 0.5) row = 14.0;
-          else if (y < 1.5) row = 17.0;
-          else if (y < 4.5) row = 16.0;
-          else if (y < 5.5) row = 17.0;
-          else row = 14.0;
-        } else if (g < 4.5) {
-          if (y < 0.5) row = 31.0;
-          else if (y < 2.5) row = 16.0;
-          else if (y < 3.5) row = 30.0;
-          else if (y < 5.5) row = 16.0;
-          else row = 31.0;
-        } else if (g < 5.5) {
-          if (y < 3.5) row = 17.0;
-          else if (y < 4.5) row = 31.0;
-          else row = 17.0;
-        } else if (g < 6.5) {
-          if (y < 0.5) row = 30.0;
-          else if (y < 2.5) row = 17.0;
-          else if (y < 3.5) row = 30.0;
-          else if (y < 4.5) row = 20.0;
-          else if (y < 5.5) row = 18.0;
-          else row = 17.0;
+      float ink(vec2 p, vec2 a, vec2 b) {
+        vec2 pa = p - a;
+        vec2 ba = b - a;
+        float h = clamp(dot(pa, ba) / max(dot(ba, ba), 0.0001), 0.0, 1.0);
+        return smoothstep(0.055, 0.018, length(pa - ba * h));
+      }
+
+      float ascii(vec2 q, float g) {
+        float s = 0.0;
+        if (g < 1.0) {
+          s = max(s, ink(q, vec2(-0.22, -0.34), vec2(0.22, -0.34)));
+          s = max(s, ink(q, vec2(0.22, -0.34), vec2(0.22, 0.34)));
+          s = max(s, ink(q, vec2(0.22, 0.34), vec2(-0.22, 0.34)));
+          s = max(s, ink(q, vec2(-0.22, 0.34), vec2(-0.22, -0.34)));
+        } else if (g < 2.0) {
+          s = max(s, ink(q, vec2(0.0, -0.36), vec2(0.0, 0.36)));
+          s = max(s, ink(q, vec2(-0.12, 0.24), vec2(0.0, 0.36)));
+          s = max(s, ink(q, vec2(-0.16, -0.36), vec2(0.16, -0.36)));
+        } else if (g < 3.0) {
+          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(0.16, 0.36)));
+          s = max(s, ink(q, vec2(0.2, -0.34), vec2(-0.16, 0.36)));
+          s = max(s, ink(q, vec2(-0.12, 0.02), vec2(0.12, 0.02)));
+        } else if (g < 4.0) {
+          s = max(s, ink(q, vec2(0.18, 0.28), vec2(-0.16, 0.28)));
+          s = max(s, ink(q, vec2(-0.16, 0.28), vec2(-0.22, 0.0)));
+          s = max(s, ink(q, vec2(-0.22, 0.0), vec2(-0.16, -0.28)));
+          s = max(s, ink(q, vec2(-0.16, -0.28), vec2(0.18, -0.28)));
+        } else if (g < 5.0) {
+          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(-0.2, 0.34)));
+          s = max(s, ink(q, vec2(-0.2, 0.34), vec2(0.2, 0.34)));
+          s = max(s, ink(q, vec2(-0.2, 0.0), vec2(0.12, 0.0)));
+          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(0.2, -0.34)));
+        } else if (g < 6.0) {
+          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(-0.2, 0.34)));
+          s = max(s, ink(q, vec2(0.2, -0.34), vec2(0.2, 0.34)));
+          s = max(s, ink(q, vec2(-0.2, 0.0), vec2(0.2, 0.0)));
+        } else if (g < 7.0) {
+          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(-0.2, 0.34)));
+          s = max(s, ink(q, vec2(-0.2, 0.34), vec2(0.16, 0.34)));
+          s = max(s, ink(q, vec2(0.16, 0.34), vec2(0.16, 0.02)));
+          s = max(s, ink(q, vec2(0.16, 0.02), vec2(-0.2, 0.02)));
+          s = max(s, ink(q, vec2(-0.02, 0.02), vec2(0.2, -0.34)));
+        } else if (g < 8.0) {
+          s = max(s, ink(q, vec2(-0.22, 0.34), vec2(0.22, 0.34)));
+          s = max(s, ink(q, vec2(0.22, 0.34), vec2(-0.16, -0.36)));
+        } else if (g < 9.0) {
+          s = max(s, ink(q, vec2(-0.2, -0.32), vec2(0.2, 0.32)));
+          s = max(s, ink(q, vec2(0.2, -0.32), vec2(-0.2, 0.32)));
+        } else if (g < 10.0) {
+          s = max(s, ink(q, vec2(-0.08, -0.34), vec2(0.22, 0.02)));
+          s = max(s, ink(q, vec2(-0.08, 0.34), vec2(0.22, -0.02)));
+        } else if (g < 11.0) {
+          s = max(s, ink(q, vec2(-0.16, 0.16), vec2(0.18, 0.16)));
+          s = max(s, ink(q, vec2(-0.16, -0.16), vec2(0.18, -0.16)));
         } else {
-          if (y < 0.5) row = 1.0;
-          else if (y < 1.5) row = 2.0;
-          else if (y < 4.5) row = 4.0;
-          else if (y < 5.5) row = 8.0;
-          else row = 16.0;
+          s = max(s, ink(q, vec2(-0.14, -0.28), vec2(-0.14, 0.28)));
+          s = max(s, ink(q, vec2(0.14, -0.28), vec2(0.14, 0.28)));
+          s = max(s, ink(q, vec2(-0.24, 0.12), vec2(0.24, 0.12)));
+          s = max(s, ink(q, vec2(-0.24, -0.12), vec2(0.24, -0.12)));
         }
-        return row;
+        return s;
       }
 
       float glyph(vec2 f, float seed) {
-        float inset = step(0.18, f.x) * step(f.x, 0.82) * step(0.1, f.y) * step(f.y, 0.9);
-        float g = floor(hash(vec2(seed, 3.1)) * 8.0);
-        float x = floor(f.x * 5.0);
-        float y = floor(f.y * 7.0);
-        float pattern = glyphRow(g, y);
-        float on = mod(floor(pattern / exp2(4.0 - x)), 2.0);
-        return on * inset;
+        float g = floor(hash(vec2(seed, 3.1)) * 12.0);
+        vec2 q = f - 0.5;
+        float gap = smoothstep(0.0, 0.08, f.x) * smoothstep(1.0, 0.92, f.x);
+        gap *= smoothstep(0.0, 0.06, f.y) * smoothstep(1.0, 0.94, f.y);
+        return ascii(q, g) * gap;
       }
 
       float planeGrid(vec2 p) {
@@ -399,8 +406,8 @@
 
       vec3 matrixLayer(vec3 rd, float z, float time, float lane) {
         vec2 p = rd.xy * (z / max(rd.z, 0.25));
-        float cols = 14.0 + lane * 5.0;
-        vec2 g = vec2(p.x * cols, p.y * (cols * 0.62));
+        float cols = 56.0 - lane * 7.0;
+        vec2 g = vec2(p.x * cols, p.y * (cols * 0.58));
         g.y += time * (0.16 + lane * 0.035);
         g.x += sin(time * 0.05 + lane * 1.7) * 0.12;
         vec2 id = floor(g);
@@ -420,7 +427,7 @@
 
       vec3 ghostLine(vec2 uv, float time, float lane) {
         float y = -0.62 + lane * 0.5 + sin(time * 0.04 + lane) * 0.03;
-        float scale = 22.0 - lane * 3.0;
+        float scale = 54.0 - lane * 6.0;
         vec2 p = vec2(uv.x * scale + time * (0.18 + lane * 0.06), (uv.y - y) * scale);
         float row = step(abs(floor(p.y)), 0.0);
         float mark = glyph(fract(p), hash(vec2(floor(p.x), lane * 13.0)));

@@ -2,7 +2,7 @@
 
 Field log for an LG OLED77C1PUB on webOS 6.5.3-47, software 03.53.45. [SlopBro](https://github.com/throwaway96/slopbro) v0.1.0 installed Homebrew Channel 0.7.3. Promo shelves, ad programs, and telemetry uploaders were then turned off. Firmware packages stayed on disk.
 
-The page is [`index.html`](index.html), one file. The log sits on a full-screen Three.js quad (r170, MIT, loaded from a CDN) with a custom fragment shader. GitHub renders this README. The scene is on the [Pages site](https://thiagopanda.github.io/lg-oled77c1pub-field-notes/).
+The page is [`index.html`](index.html), one file. The log sits on a full-screen Three.js quad (r170, MIT, loaded from a CDN) with a custom fragment shader. [`v1.html`](v1.html) is the previous background. [`v2.html`](v2.html) is this one, with smaller matrix characters. GitHub renders this README. The scene is on the [Pages site](https://thiagopanda.github.io/lg-oled77c1pub-field-notes/).
 
 No passphrases, keys, serial numbers, ZIP codes, or network addresses are in this repository.
 
