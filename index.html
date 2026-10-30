@@ -5,12 +5,155 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OLED77C1PUB · webOS 6.5.3 field log</title>
   <meta name="description" content="Field log of rooting an LG OLED77C1PUB on webOS 6.5.3-47, software 03.53.45, then turning off ads and telemetry without deleting firmware.">
-  <link rel="stylesheet" href="css/terminal.css">
+  <style>
+    :root {
+      --text: #e7fff2;
+      --dim: #8fb9a2;
+      --line: rgba(150, 255, 196, 0.22);
+      --hot: #f3fff8;
+      --bad: #ff8d8d;
+      --held: #e6c56a;
+      --mono: "SF Mono", "ui-monospace", "Cascadia Mono", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #010403;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    #view {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: block;
+    }
+    body.no-webgl {
+      background:
+        radial-gradient(900px 520px at 50% 40%, rgba(40, 120, 70, 0.18), transparent 60%),
+        #010403;
+    }
+    .term {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 200px minmax(0, 680px);
+      gap: 28px;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 36px 22px 88px;
+    }
+    .rail {
+      position: sticky;
+      top: 22px;
+      align-self: start;
+      padding: 14px 14px 16px;
+      background: rgba(0, 8, 5, 0.38);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(3px);
+    }
+    .mark {
+      color: var(--dim);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .mark strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--hot);
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      font-weight: 600;
+    }
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 16px;
+    }
+    nav a {
+      color: var(--dim);
+      text-decoration: none;
+      font-size: 13px;
+    }
+    nav a:hover { color: var(--hot); }
+    .log { min-width: 0; }
+    .plate {
+      margin: 0 0 18px;
+      padding: 18px 18px 16px;
+      background: linear-gradient(180deg, rgba(0, 10, 6, 0.62), rgba(0, 6, 4, 0.48));
+      border: 1px solid var(--line);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.25);
+    }
+    h1, h2 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1 { font-size: 18px; letter-spacing: 0.04em; text-transform: none; }
+    p { margin: 0 0 12px; }
+    .kicker {
+      margin: 0 0 8px;
+      color: #b8ffd4;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+    .dim { color: var(--dim); }
+    a { color: #b7ffd6; }
+    a:hover { color: var(--hot); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 12px;
+      font-size: 13px;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 7px 8px 7px 0;
+      border-bottom: 1px solid rgba(150, 255, 196, 0.12);
+    }
+    th {
+      width: 34%;
+      color: var(--dim);
+      font-weight: 500;
+    }
+    ul { margin: 0 0 12px; padding-left: 18px; }
+    li { margin: 0 0 6px; }
+    .tag {
+      display: inline-block;
+      margin-right: 6px;
+      padding: 0 6px;
+      color: #042117;
+      background: #8dffc0;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+    .tag.held { color: #241c08; background: var(--held); }
+    .tag.bad { color: #2a0808; background: var(--bad); }
+    .footer { color: var(--dim); font-size: 12px; }
+    @media (max-width: 800px) {
+      .term { grid-template-columns: 1fr; padding-top: 18px; }
+      .rail { position: static; }
+      nav { flex-direction: row; flex-wrap: wrap; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
 </head>
 <body>
-  <canvas id="fixture" aria-hidden="true"></canvas>
-  <div class="veil" aria-hidden="true"></div>
-  <div class="bench">
+  <canvas id="view" aria-hidden="true"></canvas>
+  <div class="term">
     <aside class="rail">
       <div class="mark">Field log 2026-10-29<strong>OLED77C1PUB</strong></div>
       <nav>
@@ -24,7 +167,6 @@
         <a href="#left">08 left in place</a>
         <a href="#sources">09 sources</a>
       </nav>
-      <div class="hud">fixture<b id="tilt">panel idle</b></div>
     </aside>
 
     <main class="log">
@@ -161,10 +303,223 @@
           <li><a href="https://github.com/piermark/omarchytv/blob/main/webos/INSTALL-WEBOS.md">OmarchyTV webOS install notes</a></li>
           <li><a href="https://github.com/webosbrew/webos-homebrew-channel">Homebrew Channel</a> · 0.7.3</li>
         </ul>
-        <p class="footer">The Three.js scene is local (<span class="dim">js/three.module.min.js</span>, MIT, r170). This page does not call a network. No passphrase, key, serial, ZIP code, or network address is in this repository.</p>
+        <p class="footer">The background is one Three.js quad and a fragment shader (r170, MIT, CDN). No passphrase, key, serial, ZIP code, or network address is in this log.</p>
       </section>
     </main>
   </div>
-  <script type="module" src="js/fixture.js"></script>
+  <script type="importmap">
+    { "imports": { "three": "https://unpkg.com/three@0.170.0/build/three.module.js" } }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+
+    const canvas = document.getElementById("view");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const vertexShader = `
+      void main() {
+        gl_Position = vec4(position.xy, 0.0, 1.0);
+      }
+    `;
+    const fragmentShader = `
+      uniform float uTime;
+      uniform vec2 uResolution;
+
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+      }
+
+      float glyphRow(float g, float y) {
+        float row = 0.0;
+        if (g < 0.5) {
+          if (y < 0.5) row = 14.0;
+          else if (y < 1.5) row = 17.0;
+          else if (y < 2.5) row = 17.0;
+          else if (y < 3.5) row = 17.0;
+          else if (y < 4.5) row = 17.0;
+          else if (y < 5.5) row = 17.0;
+          else row = 14.0;
+        } else if (g < 1.5) {
+          if (y < 0.5) row = 4.0;
+          else if (y < 1.5) row = 12.0;
+          else if (y < 5.5) row = 4.0;
+          else row = 14.0;
+        } else if (g < 2.5) {
+          if (y < 0.5) row = 14.0;
+          else if (y < 1.5) row = 17.0;
+          else if (y < 2.5) row = 17.0;
+          else if (y < 3.5) row = 31.0;
+          else row = 17.0;
+        } else if (g < 3.5) {
+          if (y < 0.5) row = 14.0;
+          else if (y < 1.5) row = 17.0;
+          else if (y < 4.5) row = 16.0;
+          else if (y < 5.5) row = 17.0;
+          else row = 14.0;
+        } else if (g < 4.5) {
+          if (y < 0.5) row = 31.0;
+          else if (y < 2.5) row = 16.0;
+          else if (y < 3.5) row = 30.0;
+          else if (y < 5.5) row = 16.0;
+          else row = 31.0;
+        } else if (g < 5.5) {
+          if (y < 3.5) row = 17.0;
+          else if (y < 4.5) row = 31.0;
+          else row = 17.0;
+        } else if (g < 6.5) {
+          if (y < 0.5) row = 30.0;
+          else if (y < 2.5) row = 17.0;
+          else if (y < 3.5) row = 30.0;
+          else if (y < 4.5) row = 20.0;
+          else if (y < 5.5) row = 18.0;
+          else row = 17.0;
+        } else {
+          if (y < 0.5) row = 1.0;
+          else if (y < 1.5) row = 2.0;
+          else if (y < 4.5) row = 4.0;
+          else if (y < 5.5) row = 8.0;
+          else row = 16.0;
+        }
+        return row;
+      }
+
+      float glyph(vec2 f, float seed) {
+        float inset = step(0.18, f.x) * step(f.x, 0.82) * step(0.1, f.y) * step(f.y, 0.9);
+        float g = floor(hash(vec2(seed, 3.1)) * 8.0);
+        float x = floor(f.x * 5.0);
+        float y = floor(f.y * 7.0);
+        float pattern = glyphRow(g, y);
+        float on = mod(floor(pattern / exp2(4.0 - x)), 2.0);
+        return on * inset;
+      }
+
+      float planeGrid(vec2 p) {
+        vec2 c = abs(fract(p) - 0.5);
+        return 1.0 - smoothstep(0.0, 0.025, min(c.x, c.y));
+      }
+
+      vec3 matrixLayer(vec3 rd, float z, float time, float lane) {
+        vec2 p = rd.xy * (z / max(rd.z, 0.25));
+        float cols = 14.0 + lane * 5.0;
+        vec2 g = vec2(p.x * cols, p.y * (cols * 0.62));
+        g.y += time * (0.16 + lane * 0.035);
+        g.x += sin(time * 0.05 + lane * 1.7) * 0.12;
+        vec2 id = floor(g);
+        vec2 f = fract(g);
+        float column = hash(vec2(id.x, lane * 9.2));
+        float alive = step(0.42, column);
+        float head = fract(column * 37.0 - time * (0.07 + column * 0.05));
+        float along = fract(id.y * 0.013 + head);
+        float trail = smoothstep(0.0, 0.45, along) * smoothstep(0.82, 0.5, along);
+        float spark = smoothstep(0.045, 0.0, abs(along - 0.62));
+        float mark = glyph(f, hash(id + vec2(lane, 2.0)));
+        float depth = exp(-z * 0.28);
+        vec3 body = vec3(0.08, 0.55, 0.32) * trail;
+        vec3 lead = vec3(0.75, 1.0, 0.86) * spark;
+        return (body + lead) * mark * alive * depth;
+      }
+
+      vec3 ghostLine(vec2 uv, float time, float lane) {
+        float y = -0.62 + lane * 0.5 + sin(time * 0.04 + lane) * 0.03;
+        float scale = 22.0 - lane * 3.0;
+        vec2 p = vec2(uv.x * scale + time * (0.18 + lane * 0.06), (uv.y - y) * scale);
+        float row = step(abs(floor(p.y)), 0.0);
+        float mark = glyph(fract(p), hash(vec2(floor(p.x), lane * 13.0)));
+        float fade = (0.16 - lane * 0.03) * row;
+        return vec3(0.45, 0.9, 0.62) * mark * fade;
+      }
+
+      void main() {
+        vec2 frag = gl_FragCoord.xy;
+        float aspect = uResolution.x / max(uResolution.y, 1.0);
+        vec2 uv = (frag / uResolution - 0.5) * vec2(aspect, 1.0);
+        uv.x += sin(uTime * 0.11) * 0.018;
+        uv.y += cos(uTime * 0.09) * 0.012;
+        float r2 = dot(uv, uv);
+        uv *= 1.0 + 0.15 * r2;
+        vec3 rd = normalize(vec3(uv, 1.45));
+
+        vec3 color = vec3(0.008, 0.016, 0.012);
+
+        if (rd.y < -0.04) {
+          float t = -1.2 / rd.y;
+          vec3 p = rd * t;
+          p.z += uTime * 0.28;
+          float fade = exp(-t * 0.16);
+          color += vec3(0.03, 0.16, 0.1) * planeGrid(p.xz * 0.42) * fade;
+        }
+        if (rd.y > 0.04) {
+          float t = 1.25 / rd.y;
+          vec3 p = rd * t;
+          p.z += uTime * 0.12;
+          float fade = exp(-t * 0.2);
+          color += vec3(0.02, 0.07, 0.05) * planeGrid(p.xz * 0.36) * fade;
+        }
+
+        color += matrixLayer(rd, 1.15, uTime, 0.0);
+        color += matrixLayer(rd, 2.35, uTime, 1.0);
+        color += matrixLayer(rd, 3.7, uTime, 2.0);
+        color += matrixLayer(rd, 5.2, uTime, 3.0);
+        color += ghostLine(uv, uTime, 0.0);
+        color += ghostLine(uv, uTime, 1.0);
+        color += ghostLine(uv, uTime, 2.0);
+
+        float vig = smoothstep(1.25, 0.25, length(uv));
+        color *= mix(0.45, 1.0, vig);
+        float grain = fract(sin(dot(frag + vec2(uTime * 47.0, uTime * 19.0), vec2(12.9898, 78.233))) * 43758.5453);
+        color += (grain - 0.5) * 0.045;
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `;
+
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: false,
+        alpha: false,
+        powerPreference: "high-performance",
+      });
+    } catch (error) {
+      document.body.classList.add("no-webgl");
+      renderer = null;
+    }
+
+    if (renderer) {
+      renderer.setClearColor(0x010403, 1);
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const uniforms = {
+        uTime: { value: 0 },
+        uResolution: { value: new THREE.Vector2(1, 1) },
+      };
+      const material = new THREE.ShaderMaterial({
+        uniforms,
+        vertexShader,
+        fragmentShader,
+        depthTest: false,
+        depthWrite: false,
+      });
+      scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
+      const clock = new THREE.Clock();
+
+      function resize() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+        renderer.setSize(width, height, false);
+        uniforms.uResolution.value.set(canvas.width, canvas.height);
+      }
+
+      function frame() {
+        uniforms.uTime.value = reduced ? 12.0 : clock.getElapsedTime();
+        renderer.render(scene, camera);
+        if (!reduced) requestAnimationFrame(frame);
+      }
+
+      resize();
+      window.addEventListener("resize", resize);
+      frame();
+    }
+  </script>
 </body>
 </html>
