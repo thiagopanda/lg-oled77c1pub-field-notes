@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OLED77C1PUB · webOS 6.5.3 field log</title>
+  <meta name="description" content="Field log of rooting an LG OLED77C1PUB on webOS 6.5.3-47, software 03.53.45, then turning off ads and telemetry without deleting firmware.">
+  <link rel="stylesheet" href="css/terminal.css">
+</head>
+<body>
+  <canvas id="fixture" aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
+  <div class="bench">
+    <aside class="rail">
+      <div class="mark">Field log 2026-10-29<strong>OLED77C1PUB</strong></div>
+      <nav>
+        <a href="#identity">01 identity</a>
+        <a href="#reach">02 what answered</a>
+        <a href="#thought">03 which root</a>
+        <a href="#run">04 the run</a>
+        <a href="#note">05 the US report</a>
+        <a href="#debloat">06 ads and telemetry</a>
+        <a href="#omarchy">07 OmarchyTV</a>
+        <a href="#left">08 left in place</a>
+        <a href="#sources">09 sources</a>
+      </nav>
+      <div class="hud">fixture<b id="tilt">panel idle</b></div>
+    </aside>
+
+    <main class="log">
+      <section class="plate" id="identity">
+        <p class="kicker">root@LGwebOSTV ~</p>
+        <h1>OLED77C1PUB · webOS 6.5.3-47</h1>
+        <p>29 Oct 2026. Local set, owner present. Homebrew Channel was installed with SlopBro. Promo shelves, ad programs, and the telemetry uploaders were switched off afterward. Firmware packages stayed on disk.</p>
+        <p class="dim">Linux LGwebOSTV 4.4.84-229.kcl4tv.6 #1 SMP PREEMPT Sat Sep 13 08:10:48 UTC 2025 aarch64</p>
+        <table>
+          <tr><th>model</th><td>OLED77C1PUB · US · 2021 OLED</td></tr>
+          <tr><th>platform</th><td>HE_DTV_W21O_AFABATAA</td></tr>
+          <tr><th>software</th><td>03.53.45</td></tr>
+          <tr><th>webOS</th><td>6.5.3-47 · core_os_release 6.5.3-47 · webos_release 6.5.3 · build 47</td></tr>
+          <tr><th>kernel</th><td>4.4.84-229.kcl4tv.6 · aarch64 · built 13 Sep 2025</td></tr>
+        </table>
+      </section>
+
+      <section class="plate" id="reach">
+        <h2>02 what answered</h2>
+        <p>The set was on the LAN. Ping was about 4 ms with no loss. It advertised itself as <span class="dim">[LG] webOS TV OLED77C1PUB</span>. UPnP also answered as WebOS/1.5, WebOS/4.0.0, and WebOS/4.1.0. Those strings are service versions, not the OS.</p>
+        <table>
+          <tr><th>3000, 3001</th><td><span class="tag">open</span> SSAP</td></tr>
+          <tr><th>9922</th><td><span class="tag">open</span> OpenSSH 6.1 · Developer Mode</td></tr>
+          <tr><th>9991</th><td><span class="tag">open</span> developer key server</td></tr>
+          <tr><th>9998</th><td><span class="tag">open</span> inspector</td></tr>
+          <tr><th>22</th><td><span class="tag held">refused</span> Homebrew SSH was not on</td></tr>
+          <tr><th>23</th><td><span class="tag held">refused</span> telnet was not on yet</td></tr>
+        </table>
+        <p>Developer Mode 1.12.2 was installed. The key server was serving the developer key. A shell as <span class="dim">prisoner</span> was not opened. The passphrase stayed on the TV.</p>
+      </section>
+
+      <section class="plate" id="thought">
+        <h2>03 which root</h2>
+        <p>The 2017 set in the other log is webOS 3.9, and DejaVuln still applied there. This C1 is webOS 6 on software 03.53.45. The same number is past every older public method.</p>
+        <table>
+          <tr><th>RootMy.TV</th><td><span class="tag bad">closed</span> Worked on an OLED77C1PUB at 03.25.25. On later C1 firmware it hung at “connecting” or rebooted with no Homebrew Channel. 03.36.50 was already called patched.</td></tr>
+          <tr><th>crashd</th><td><span class="tag bad">closed</span> For this platform the first listed patched firmware is 03.40.85. The current Developer Mode app also closes the jail path, and Developer Mode was already on.</td></tr>
+          <tr><th>faultmanager</th><td><span class="tag bad">closed</span> The January 2025 Homebrew page still said no patches. The tool’s own readme, as of 24 Aug 2025, says the latest webOS 6 firmware is patched. 03.53.45 is after that.</td></tr>
+          <tr><th>DejaVuln</th><td><span class="tag bad">closed</span> Someone had already tried it on this exact pair, webOS 6.5.3 and 03.53.45, and it did not work.</td></tr>
+          <tr><th>WTA, GetMeIn, NVM</th><td><span class="tag bad">wrong tool</span> WTA was patched in firmware around April 2024. GetMeIn is webOS 1–3, and its old binary rewrites a boot script. NVM debug is the high-voltage path for webOS 3 and older.</td></tr>
+          <tr><th>SlopBro</th><td><span class="tag">open on this build</span> CanI.RootMy.TV lists 03.53.45 as the last vulnerable build. European C1 sets on this software and webOS version were already confirmed, through 26 Oct 2026.</td></tr>
+        </table>
+        <p>A failed software root is described by Homebrew as leaving the set as it was. The brick cases are later changes: writing the kernel or rootfs, and marking files immutable. No C1 report found in this pass was a permanent brick from a failed root attempt. A wrong Homebrew build on a C1 at 03.33.11 left SSH dead for about a day, then recovered. A US 77-inch G1 on this same firmware launched SlopBro’s apps and never fetched the page. That report did not describe a brick.</p>
+        <p>The G1 and this C1 share <span class="dim">HE_DTV_W21O_AFABATAA</span>, software 03.53.45, and webOS 6.5.3-47. The G1 report used SlopBro v0.0.5, which GitHub still marks as Latest. v0.1.0 is a pre-release from 27 Sep 2026, commit <span class="dim">21023d56</span>, message “add workaround for LG’s patch attempt.” That difference was the reason to try v0.1.0 here, not a promise the G1 would follow.</p>
+      </section>
+
+      <section class="plate" id="run">
+        <h2>04 the run</h2>
+        <p>SlopBro v0.1.0 was run from that commit. Flags were <span class="dim">--debug</span>, <span class="dim">--webos-version 6</span>, and an explicit LAN address for the computer so the script would not guess. The default fake-service-path workaround was left on. Developer Mode’s SSH was up and was not used. Pairing was the on-screen Allow.</p>
+        <p>The script’s first webOS 6 candidate that was installed was <span class="dim">com.webos.app.adoverlayex</span>. It launched, and the TV fetched all four tracked files about a second later: <span class="dim">index.html</span>, <span class="dim">autoroot.sh</span>, <span class="dim">package.json</span>, <span class="dim">main.js</span>. The launch returned true. No crash toast.</p>
+        <table>
+          <tr><th>adoverlayex</th><td>1.0.0 · trusted · overlay · visible false</td></tr>
+          <tr><th>adoverlay</th><td>1.0.0 · trusted · overlay · visible false</td></tr>
+          <tr><th>acroverlay</th><td>1.0.7 · default trust · card</td></tr>
+          <tr><th>dangbei-overlay</th><td>present · privilegedJail true · standAloneLaunchable false</td></tr>
+          <tr><th>tinybrowser</th><td>absent, same as the US G1 report</td></tr>
+          <tr><th>Homebrew Channel</th><td>org.webosbrew.hbchannel 0.7.3</td></tr>
+          <tr><th>Developer Mode</th><td>1.12.2 was still installed at the moment Homebrew appeared</td></tr>
+        </table>
+        <p>Homebrew’s own screen showed rooted, with telnet on. Port 23 accepted a connection with no login and returned <span class="dim">uid=0(root) gid=0(root)</span> on the kernel above. Port 22 was still refused. Developer Mode was removed after that. <span class="dim">/var/luna/preferences/devmode_enabled</span> remained, which is the persistence marker. It was not installed again.</p>
+        <p class="dim">Quick Start+ was off before the reboot that keeps Homebrew. That part matches the SlopBro and Homebrew notes: an OLED can look off while the pixel refresher is still running.</p>
+      </section>
+
+      <section class="plate" id="note">
+        <h2>05 the US report</h2>
+        <p>The comparison was posted on <a href="https://github.com/throwaway96/slopbro/issues/7#issuecomment-6513916567">SlopBro issue 7</a>. That issue is a US OLED77G1PUA, same platform and firmware, where the overlay apps launched and never requested the page. This C1 did request the page, on v0.1.0, through the app and parameter the script already chooses for webOS 6. v0.0.5 was not re-run here, so the note does not claim the workaround is what changed the result. Addresses and the client key were left out of the comment.</p>
+      </section>
+
+      <section class="plate" id="debloat">
+        <h2>06 ads and telemetry</h2>
+        <p><a href="https://github.com/nurikk/lg-webos-ad-killer">lg-webos-ad-killer</a> was the fit. Its author had already run it on an OLED55C16LA, webOS 6.5.3. It bind-mounts a filtered home layout and an exit stub over selected programs. It does not delete packages. The copy used hashed to <span class="dim">b7955ed3ac075dff56ce0b620097b0c59b41fbc2f2034e13e3480376de4de75b</span>.</p>
+        <p>The dry run completed. Profile <span class="dim">ads</span> was applied, not <span class="dim">privacy</span>. Privacy also stops voice, Alexa, ThinQ, and music recognition. Those were left running. A previous copy of the settings files was saved at <span class="dim">/home/root/debloat-backup</span> before the write. The hook is <span class="dim">/var/lib/webosbrew/init.d/ad-killer</span>, so the stubs come back at boot. The mounts themselves do not survive a reboot without that hook.</p>
+        <p>Home rows removed from the layout, not from disk:</p>
+        <p class="dim">Prime, browser, content preview, editor’s picks, games, inline ad banner, both LG recommendation rows, Life on Screen, the Live TV row, recommended, sports alerts.</p>
+        <p>The script refuses to continue if the Apps row or the home dashboard row would be removed. This run finished, so those two stayed. Live TV as an app was not deleted.</p>
+        <table>
+          <tr><th>stubbed</th><td>acr2, admanager, nudge, rdxd, sportsalarm, uploadd</td></tr>
+          <tr><th>after</th><td>none of those processes were running. Each stub is a shell that exits 0.</td></tr>
+        </table>
+        <table>
+          <tr><th>live promotion, LG Channels, watch history, promo video, demo mode</th><td>off</td></tr>
+          <tr><th>debug-log upload, fault-log upload</th><td>off · debug upload had been on</td></tr>
+          <tr><th>ad cookie, sports alarm, screensaver ad</th><td>off</td></tr>
+          <tr><th>limit ad tracking</th><td>on</td></tr>
+          <tr><th>home promotion, home auto-launch, customized ads</th><td>already off, left off</td></tr>
+          <tr><th>personal recommendations</th><td>already off</td></tr>
+          <tr><th>do not sell my personal information</th><td>already on</td></tr>
+        </table>
+        <p>Both <span class="dim">setSystemSettings</span> calls returned true, and a second read matched the table. Firmware-update hosts were not blocked. Opening the Content Store or a streaming app still talks to that service. A mic command can still leave the set, because voice was not part of this profile.</p>
+      </section>
+
+      <section class="plate" id="omarchy">
+        <h2>07 OmarchyTV</h2>
+        <p><span class="dim">com.omarchytv.home</span> 2.13.1 was already installed under the developer app path. The in-app banner still says 2.13.0-beta. Number 8 on the remote was already a quick-access slot for it.</p>
+        <p>On a rooted set the boot behavior is a setting, not a separate machine. Workspace 5, All OmarchyTV settings:</p>
+        <ul>
+          <li><strong>Open when the TV starts</strong> writes an empty flag at <span class="dim">/var/lib/omarchytv/boot</span> and a Homebrew hook at <span class="dim">/var/lib/webosbrew/init.d/omarchytv</span>. That hook was present after the switch was turned on.</li>
+          <li><strong>Home button opens OmarchyTV</strong> is a second flag. Home from inside OmarchyTV still reaches LG Home.</li>
+          <li><strong>Keep loaded in the background</strong> adds the app id to <span class="dim">KeepAlive</span> in <span class="dim">/home/root/memorymanager-conf.json</span> and restarts <span class="dim">memchute</span>.</li>
+        </ul>
+        <p>The third switch showed “rooted TV only” and, on click, asked for root and Homebrew Channel. Homebrew exec was already working: the boot flag and the hook existed. The keep-loaded probe is one shell command whose last step reads the override file. That file does not exist until the switch has been on once, so <span class="dim">cat</span> exits 1. The app treats a failed Homebrew command as “not rooted.”</p>
+        <p><span class="dim">/usr/sbin/memchute</span> does contain the override path, and <span class="dim">/etc/palm/memorymanager-conf.json</span> was readable. Its KeepAlive list was <span class="dim">com.webos.app.livehbbtv</span>, <span class="dim">com.webos.app.livedmost</span>, <span class="dim">com.webos.app.liveibb</span>. The override was written as a copy of that file plus <span class="dim">com.omarchytv.home</span>, and memchute was restarted. The probe command inside the app was changed so a missing override is not a failed command. After OmarchyTV is opened again, the switch should read on.</p>
+      </section>
+
+      <section class="plate" id="left">
+        <h2>08 left in place</h2>
+        <table>
+          <tr><th>firmware packages</th><td>kept · rootfs was not remounted for removal</td></tr>
+          <tr><th>voice, Alexa, ThinQ, music recognition</th><td>still running</td></tr>
+          <tr><th>firmware update checks</th><td>not blocked</td></tr>
+          <tr><th>Developer Mode</th><td>removed · do not install it again while rooted</td></tr>
+          <tr><th>telnet</th><td>was on for the root check · unauthenticated on port 23</td></tr>
+          <tr><th>root SSH</th><td>was still refused when telnet was checked</td></tr>
+          <tr><th>locale, alerts, country</th><td>not rewritten</td></tr>
+        </table>
+        <p>Nothing in this log writes the kernel, rootfs, or another signed partition. That is the change <a href="https://rootmy.tv/warning">RootMy.TV’s warning</a> says bricks a set.</p>
+      </section>
+
+      <section class="plate" id="sources">
+        <h2>09 sources</h2>
+        <ul>
+          <li><a href="https://github.com/throwaway96/slopbro">SlopBro</a> · v0.1.0 · <span class="dim">21023d56</span> · 27 Sep 2026</li>
+          <li><a href="https://github.com/throwaway96/slopbro/issues/1">C1 confirmations at 03.53.45</a> · updated 26 Oct 2026</li>
+          <li><a href="https://github.com/throwaway96/slopbro/issues/7">US 77-inch G1, same firmware, page never fetched</a></li>
+          <li><a href="https://github.com/throwaway96/slopbro/issues/7#issuecomment-6513916567">comparison posted from this set</a></li>
+          <li><a href="https://github.com/webosbrew/caniroot/issues/100">DejaVuln already failed on 03.53.45</a></li>
+          <li><a href="https://cani.rootmy.tv/">CanI.RootMy.TV</a></li>
+          <li><a href="https://github.com/throwaway96/faultmanager-autoroot">faultmanager-autoroot</a> · webOS 6 called patched 24 Aug 2025</li>
+          <li><a href="https://www.webosbrew.org/rooting/">webOS Homebrew rooting</a> · the January 2025 “no patches” line is older than the tool readme</li>
+          <li><a href="https://www.webosbrew.org/rooting/exploits/">root exploits</a></li>
+          <li><a href="https://gist.github.com/throwaway96/e811b0f7cc2a705a5a476a8dfa45e09f">crashd</a> · W21O patched at 03.40.85</li>
+          <li><a href="https://rootmy.tv/warning">do not write signed partitions</a></li>
+          <li><a href="https://github.com/nurikk/lg-webos-ad-killer">lg-webos-ad-killer</a></li>
+          <li><a href="https://github.com/piermark/omarchytv/blob/main/webos/INSTALL-WEBOS.md">OmarchyTV webOS install notes</a></li>
+          <li><a href="https://github.com/webosbrew/webos-homebrew-channel">Homebrew Channel</a> · 0.7.3</li>
+        </ul>
+        <p class="footer">The Three.js scene is local (<span class="dim">js/three.module.min.js</span>, MIT, r170). This page does not call a network. No passphrase, key, serial, ZIP code, or network address is in this repository.</p>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="js/fixture.js"></script>
+</body>
+</html>
