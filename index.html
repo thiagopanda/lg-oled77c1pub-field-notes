@@ -323,80 +323,28 @@
     const fragmentShader = `
       uniform float uTime;
       uniform vec2 uResolution;
+      uniform sampler2D uAtlas;
+      uniform float uGlyphCount;
 
       float hash(vec2 p) {
         return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
       }
 
-      float ink(vec2 p, vec2 a, vec2 b) {
-        vec2 pa = p - a;
-        vec2 ba = b - a;
-        float h = clamp(dot(pa, ba) / max(dot(ba, ba), 0.0001), 0.0, 1.0);
-        return smoothstep(0.055, 0.018, length(pa - ba * h));
-      }
-
-      float ascii(vec2 q, float g) {
-        float s = 0.0;
-        if (g < 1.0) {
-          s = max(s, ink(q, vec2(-0.22, -0.34), vec2(0.22, -0.34)));
-          s = max(s, ink(q, vec2(0.22, -0.34), vec2(0.22, 0.34)));
-          s = max(s, ink(q, vec2(0.22, 0.34), vec2(-0.22, 0.34)));
-          s = max(s, ink(q, vec2(-0.22, 0.34), vec2(-0.22, -0.34)));
-        } else if (g < 2.0) {
-          s = max(s, ink(q, vec2(0.0, -0.36), vec2(0.0, 0.36)));
-          s = max(s, ink(q, vec2(-0.12, 0.24), vec2(0.0, 0.36)));
-          s = max(s, ink(q, vec2(-0.16, -0.36), vec2(0.16, -0.36)));
-        } else if (g < 3.0) {
-          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(0.16, 0.36)));
-          s = max(s, ink(q, vec2(0.2, -0.34), vec2(-0.16, 0.36)));
-          s = max(s, ink(q, vec2(-0.12, 0.02), vec2(0.12, 0.02)));
-        } else if (g < 4.0) {
-          s = max(s, ink(q, vec2(0.18, 0.28), vec2(-0.16, 0.28)));
-          s = max(s, ink(q, vec2(-0.16, 0.28), vec2(-0.22, 0.0)));
-          s = max(s, ink(q, vec2(-0.22, 0.0), vec2(-0.16, -0.28)));
-          s = max(s, ink(q, vec2(-0.16, -0.28), vec2(0.18, -0.28)));
-        } else if (g < 5.0) {
-          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(-0.2, 0.34)));
-          s = max(s, ink(q, vec2(-0.2, 0.34), vec2(0.2, 0.34)));
-          s = max(s, ink(q, vec2(-0.2, 0.0), vec2(0.12, 0.0)));
-          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(0.2, -0.34)));
-        } else if (g < 6.0) {
-          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(-0.2, 0.34)));
-          s = max(s, ink(q, vec2(0.2, -0.34), vec2(0.2, 0.34)));
-          s = max(s, ink(q, vec2(-0.2, 0.0), vec2(0.2, 0.0)));
-        } else if (g < 7.0) {
-          s = max(s, ink(q, vec2(-0.2, -0.34), vec2(-0.2, 0.34)));
-          s = max(s, ink(q, vec2(-0.2, 0.34), vec2(0.16, 0.34)));
-          s = max(s, ink(q, vec2(0.16, 0.34), vec2(0.16, 0.02)));
-          s = max(s, ink(q, vec2(0.16, 0.02), vec2(-0.2, 0.02)));
-          s = max(s, ink(q, vec2(-0.02, 0.02), vec2(0.2, -0.34)));
-        } else if (g < 8.0) {
-          s = max(s, ink(q, vec2(-0.22, 0.34), vec2(0.22, 0.34)));
-          s = max(s, ink(q, vec2(0.22, 0.34), vec2(-0.16, -0.36)));
-        } else if (g < 9.0) {
-          s = max(s, ink(q, vec2(-0.2, -0.32), vec2(0.2, 0.32)));
-          s = max(s, ink(q, vec2(0.2, -0.32), vec2(-0.2, 0.32)));
-        } else if (g < 10.0) {
-          s = max(s, ink(q, vec2(-0.08, -0.34), vec2(0.22, 0.02)));
-          s = max(s, ink(q, vec2(-0.08, 0.34), vec2(0.22, -0.02)));
-        } else if (g < 11.0) {
-          s = max(s, ink(q, vec2(-0.16, 0.16), vec2(0.18, 0.16)));
-          s = max(s, ink(q, vec2(-0.16, -0.16), vec2(0.18, -0.16)));
-        } else {
-          s = max(s, ink(q, vec2(-0.14, -0.28), vec2(-0.14, 0.28)));
-          s = max(s, ink(q, vec2(0.14, -0.28), vec2(0.14, 0.28)));
-          s = max(s, ink(q, vec2(-0.24, 0.12), vec2(0.24, 0.12)));
-          s = max(s, ink(q, vec2(-0.24, -0.12), vec2(0.24, -0.12)));
-        }
-        return s;
-      }
-
       float glyph(vec2 f, float seed) {
-        float g = floor(hash(vec2(seed, 3.1)) * 12.0);
-        vec2 q = f - 0.5;
-        float gap = smoothstep(0.0, 0.08, f.x) * smoothstep(1.0, 0.92, f.x);
-        gap *= smoothstep(0.0, 0.06, f.y) * smoothstep(1.0, 0.94, f.y);
-        return ascii(q, g) * gap;
+        float id = floor(hash(vec2(seed, 3.1)) * uGlyphCount);
+        vec2 g = clamp(f, 0.08, 0.92);
+        vec2 base = vec2((id + g.x) / uGlyphCount, g.y);
+        vec2 b = vec2(0.042 / uGlyphCount, 0.038);
+        float c = texture2D(uAtlas, base).r * 0.28;
+        c += texture2D(uAtlas, base + vec2(b.x, 0.0)).r * 0.12;
+        c += texture2D(uAtlas, base - vec2(b.x, 0.0)).r * 0.12;
+        c += texture2D(uAtlas, base + vec2(0.0, b.y)).r * 0.12;
+        c += texture2D(uAtlas, base - vec2(0.0, b.y)).r * 0.12;
+        c += texture2D(uAtlas, base + b).r * 0.06;
+        c += texture2D(uAtlas, base - b).r * 0.06;
+        c += texture2D(uAtlas, base + vec2(b.x, -b.y)).r * 0.06;
+        c += texture2D(uAtlas, base + vec2(-b.x, b.y)).r * 0.06;
+        return c;
       }
 
       float planeGrid(vec2 p) {
@@ -495,9 +443,34 @@
       renderer.setClearColor(0x010403, 1);
       const scene = new THREE.Scene();
       const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const glyphChars = Array.from("ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ:・.\"=*+-<>¦｜012345789");
+      const cellW = 48;
+      const cellH = 72;
+      const atlasCanvas = document.createElement("canvas");
+      atlasCanvas.width = cellW * glyphChars.length;
+      atlasCanvas.height = cellH;
+      const atlasCtx = atlasCanvas.getContext("2d");
+      atlasCtx.clearRect(0, 0, atlasCanvas.width, atlasCanvas.height);
+      atlasCtx.fillStyle = "#ffffff";
+      atlasCtx.textAlign = "center";
+      atlasCtx.textBaseline = "middle";
+      atlasCtx.font = "600 " + (cellH * 0.72) + "px \"Hiragino Kaku Gothic ProN\", \"Hiragino Sans\", \"Yu Gothic\", \"Noto Sans JP\", sans-serif";
+      glyphChars.forEach((ch, i) => {
+        atlasCtx.fillText(ch, cellW * i + cellW * 0.5, cellH * 0.52);
+      });
+      const atlas = new THREE.CanvasTexture(atlasCanvas);
+      atlas.colorSpace = THREE.NoColorSpace;
+      atlas.generateMipmaps = false;
+      atlas.minFilter = THREE.LinearFilter;
+      atlas.magFilter = THREE.LinearFilter;
+      atlas.wrapS = THREE.ClampToEdgeWrapping;
+      atlas.wrapT = THREE.ClampToEdgeWrapping;
+      atlas.needsUpdate = true;
       const uniforms = {
         uTime: { value: 0 },
         uResolution: { value: new THREE.Vector2(1, 1) },
+        uAtlas: { value: atlas },
+        uGlyphCount: { value: glyphChars.length },
       };
       const material = new THREE.ShaderMaterial({
         uniforms,
